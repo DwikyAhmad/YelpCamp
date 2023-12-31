@@ -7,9 +7,9 @@ if (process.env.NODE_ENV !== "production") {
     require("dotenv").config();
 }
 
-// const dbUrl = process.env.DB_URL;
+const dbUrl = process.env.DB_URL;
 
-const dbUrl = "mongodb://127.0.0.1:27017/yelp-camp";
+// const dbUrl = "mongodb://127.0.0.1:27017/yelp-camp";
 
 mongoose
     .connect(dbUrl)
@@ -30,7 +30,8 @@ const seedDB = async () => {
         const rand1000 = Math.floor(Math.random() * 1000);
         const price = Math.floor(Math.random() * 20) + 10;
         const camp = new Campground({
-            author: "64e6afdb4ae0c57b4debe3a7",
+            author: "6590e969a0dffdf4e68a9dbe", // tim2 atlas
+            // author: "64e6afdb4ae0c57b4debe3a7", // tim2 localhost
             location: `${cities[rand1000].city}, ${cities[rand1000].state}`,
             title: `${sample(descriptors)} ${sample(places)}`,
             images: [
