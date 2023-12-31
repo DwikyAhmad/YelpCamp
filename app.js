@@ -19,9 +19,13 @@ const helmet = require("helmet");
 const userRoutes = require("./routes/users");
 const campgroundRoutes = require("./routes/campgrounds");
 const reviewRoutes = require("./routes/reviews");
+const MongoStore = require("connect-mongo");
+
+const dbUrl = process.env.DB_URL;
+// const dbUrl = "mongodb://127.0.0.1:27017/yelp-camp";
 
 mongoose
-    .connect("mongodb://127.0.0.1:27017/yelp-camp")
+    .connect(dbUrl)
     .then(() => {
         console.log("Database connected");
     })
@@ -43,7 +47,21 @@ app.use(
         replaceWith: "_",
     })
 );
+
+const store = MongoStore.create({
+    mongoUrl: dbUrl,
+    touchAfter: 24 * 60 * 60,
+    crypto: {
+        secret: "thisshouldbeabettersecret!",
+    },
+});
+
+store.on("error", function (e) {
+    console.log("SESSION STORE ERROR", e);
+});
+
 const sessionConfig = {
+    store: store,
     name: "session",
     secret: "thisshouldbeabettersecret!",
     resave: false,
@@ -54,6 +72,7 @@ const sessionConfig = {
         maxAge: 1000 * 60 * 60 * 24 * 7,
     },
 };
+
 app.use(session(sessionConfig));
 app.use(flash());
 app.use(helmet());
@@ -97,7 +116,7 @@ app.use(
                 "'self'",
                 "blob:",
                 "data:",
-                "https://res.cloudinary.com/dsjkgufrz/", //SHOULD MATCH YOUR CLOUDINARY ACCOUNT! 
+                "https://res.cloudinary.com/dsjkgufrz/", //SHOULD MATCH YOUR CLOUDINARY ACCOUNT!
                 "https://images.unsplash.com/",
                 "https://unpkg.com/",
                 "https://*.tile.openstreetmap.org/",
